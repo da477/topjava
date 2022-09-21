@@ -37,7 +37,9 @@ public class UserMealsUtil {
 
 		List<UserMealWithExcess> mealTo = new ArrayList<>();
 		for (UserMeal userMeal : meals) {
-			if (userMeal.getLocalTime().isAfter(startTime) && userMeal.getLocalTime().isBefore(endTime)) {
+			boolean isUsedTime = TimeUtil.isBetweenHalfOpen(userMeal.getLocalTime(),
+					startTime, endTime);
+			if (isUsedTime) {
 				mealTo.add(new UserMealWithExcess(userMeal.getDateTime(),
 						userMeal.getDescription(),
 						userMeal.getCalories(),
@@ -53,7 +55,7 @@ public class UserMealsUtil {
 
 		return meals
 				.stream()
-				.filter(userMeal -> userMeal.getLocalTime().isAfter(startTime) && userMeal.getLocalTime().isBefore(endTime))
+				.filter(userMeal -> TimeUtil.isBetweenHalfOpen(userMeal.getLocalTime(), startTime, endTime))
 				.map(userMeal -> new UserMealWithExcess(userMeal.getDateTime(),
 						userMeal.getDescription(),
 						userMeal.getCalories(),
@@ -64,6 +66,7 @@ public class UserMealsUtil {
 	private static Map<LocalDate, Integer> groupByDateSumCalories(List<UserMeal> meals) {
 		return meals
 				.stream()
-				.collect(Collectors.groupingBy(UserMeal::getLocalDate, Collectors.summingInt(UserMeal::getCalories)));
+				.collect(Collectors.groupingBy(UserMeal::getLocalDate,
+						Collectors.summingInt(UserMeal::getCalories)));
 	}
 }
